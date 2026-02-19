@@ -3,7 +3,7 @@
 A fast, private bookmark manager built with Next.js, Supabase, and Tailwind CSS.
 
 ## Live Demo
-[Deployed on Vercel](#) ← replace with your URL
+[Deployed on Vercel](#) ← smart-bookmark-ten-iota.vercel.app
 
 ## GitHub Repo
 [github.com/sahityasami27/smart-bookmark-app](https://github.com/sahityasami27/smart-bookmark-app)
@@ -56,13 +56,6 @@ The Supabase real-time subscription in the code was correct but updates weren't 
 ```sql
 alter publication supabase_realtime add table bookmarks;
 ```
-
-### 9. Git push failing with "repository not found"
-When pushing to GitHub, I had accidentally left the placeholder `YOUR_USERNAME` in the remote URL. Fixed it with:
-```bash
-git remote set-url origin https://github.com/sahityasami27/smart-bookmark-app.git
-```
-
 ---
 
 ## Setup & Run Locally

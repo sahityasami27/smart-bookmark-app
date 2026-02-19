@@ -32,7 +32,7 @@ export default function Dashboard() {
       const channel = supabase
         .channel('bookmarks-realtime')
         .on('postgres_changes',
-          { event: '*', schema: 'public', table: 'bookmarks', filter: `user_id=eq.${session.user.id}` },
+          {  event: '*', schema: 'public', table: 'bookmarks' },
           (payload) => {
             if (payload.eventType === 'INSERT') setBookmarks((prev) => [payload.new, ...prev])
             else if (payload.eventType === 'DELETE') setBookmarks((prev) => prev.filter((b) => b.id !== payload.old.id))
