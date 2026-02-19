@@ -3,11 +3,9 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-
+const supabase = createClient() 
 export default function Dashboard() {
   const router = useRouter()
-  const supabase = createClient()
-
   const [user, setUser] = useState(null)
   const [bookmarks, setBookmarks] = useState([])
   const [title, setTitle] = useState('')
