@@ -31,16 +31,25 @@ export default function Dashboard() {
 
       const channel = supabase
         .channel('bookmarks-realtime')
-        .on('postgres_changes',
-          {  event: '*', schema: 'public', table: 'bookmarks' },
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'bookmarks' },
           (payload) => {
-            if (payload.eventType === 'INSERT') setBookmarks((prev) => [payload.new, ...prev])
-            else if (payload.eventType === 'DELETE') setBookmarks((prev) => prev.filter((b) => b.id !== payload.old.id))
+            console.log('realtime event:', payload)
+            if (payload.eventType === 'INSERT') {
+              setBookmarks((prev) => [payload.new, ...prev])
+            } else if (payload.eventType === 'DELETE') {
+              setBookmarks((prev) => prev.filter((b) => b.id !== payload.old.id))
+            }
           }
-        ).subscribe()
+        )
+        .subscribe((status) => {
+          console.log('subscription status:', status)
+        })
 
       return () => supabase.removeChannel(channel)
     }
+
     init()
   }, [])
 
@@ -77,16 +86,12 @@ export default function Dashboard() {
         @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { background: #0a0a0a; color: #fff; font-family: 'DM Sans', sans-serif; }
-
         .dashboard { min-height: 100vh; background: #0a0a0a; }
-
         .bg-grid {
           position: fixed; inset: 0; pointer-events: none;
           background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
           background-size: 60px 60px;
         }
-
-        /* HEADER */
         .header {
           position: sticky; top: 0; z-index: 100;
           background: rgba(10,10,10,0.8);
@@ -96,7 +101,6 @@ export default function Dashboard() {
           height: 64px;
           display: flex; align-items: center; justify-content: space-between;
         }
-
         .header-logo {
           font-family: 'Syne', sans-serif;
           font-weight: 800;
@@ -104,11 +108,8 @@ export default function Dashboard() {
           letter-spacing: -0.02em;
           display: flex; align-items: center; gap: 8px;
         }
-
         .header-logo .dot { color: #FFD200; }
-
         .header-right { display: flex; align-items: center; gap: 16px; }
-
         .user-pill {
           background: rgba(255,255,255,0.05);
           border: 1px solid rgba(255,255,255,0.08);
@@ -121,7 +122,6 @@ export default function Dashboard() {
           text-overflow: ellipsis;
           white-space: nowrap;
         }
-
         .logout-btn {
           background: transparent;
           border: 1px solid rgba(255,255,255,0.1);
@@ -134,10 +134,7 @@ export default function Dashboard() {
           transition: all 0.2s;
         }
         .logout-btn:hover { border-color: #ff4d4d; color: #ff4d4d; }
-
-        /* MAIN */
         .main { max-width: 680px; margin: 0 auto; padding: 3rem 1.5rem; position: relative; }
-
         .page-title {
           font-family: 'Syne', sans-serif;
           font-size: 2.5rem;
@@ -145,12 +142,8 @@ export default function Dashboard() {
           letter-spacing: -0.03em;
           margin-bottom: 0.5rem;
         }
-
         .page-title .accent { color: #FFD200; }
-
         .page-sub { color: rgba(255,255,255,0.3); font-size: 14px; margin-bottom: 2.5rem; }
-
-        /* FORM */
         .form-card {
           background: rgba(255,255,255,0.03);
           border: 1px solid rgba(255,255,255,0.08);
@@ -158,11 +151,8 @@ export default function Dashboard() {
           padding: 1.5rem;
           margin-bottom: 2.5rem;
         }
-
         .form-row { display: flex; flex-direction: column; gap: 10px; }
-
         .input-wrap { position: relative; }
-
         .input-wrap input {
           width: 100%;
           background: rgba(255,255,255,0.04);
@@ -175,10 +165,8 @@ export default function Dashboard() {
           outline: none;
           transition: border-color 0.2s;
         }
-
         .input-wrap input::placeholder { color: rgba(255,255,255,0.2); }
         .input-wrap input:focus { border-color: #FFD200; }
-
         .add-btn {
           background: #FFD200;
           color: #0a0a0a;
@@ -193,23 +181,11 @@ export default function Dashboard() {
           width: 100%;
           margin-top: 4px;
         }
-
         .add-btn:hover { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(255,210,0,0.25); }
         .add-btn:disabled { opacity: 0.4; transform: none; cursor: not-allowed; }
-
         .error-msg { color: #ff6b6b; font-size: 13px; margin-top: 4px; }
-
-        /* BOOKMARKS */
-        .section-header {
-          display: flex; align-items: baseline; gap: 10px; margin-bottom: 1rem;
-        }
-
-        .section-title {
-          font-family: 'Syne', sans-serif;
-          font-weight: 700;
-          font-size: 1.1rem;
-        }
-
+        .section-header { display: flex; align-items: baseline; gap: 10px; margin-bottom: 1rem; }
+        .section-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.1rem; }
         .count-badge {
           background: rgba(255,210,0,0.15);
           color: #FFD200;
@@ -218,18 +194,10 @@ export default function Dashboard() {
           padding: 2px 10px;
           border-radius: 100px;
         }
-
-        .empty-state {
-          text-align: center;
-          padding: 4rem 2rem;
-          color: rgba(255,255,255,0.2);
-        }
-
+        .empty-state { text-align: center; padding: 4rem 2rem; color: rgba(255,255,255,0.2); }
         .empty-icon { font-size: 3rem; margin-bottom: 1rem; }
         .empty-text { font-size: 14px; }
-
         .bookmarks-list { display: flex; flex-direction: column; gap: 10px; }
-
         .bookmark-card {
           background: rgba(255,255,255,0.03);
           border: 1px solid rgba(255,255,255,0.06);
@@ -239,15 +207,12 @@ export default function Dashboard() {
           align-items: center;
           gap: 14px;
           transition: all 0.2s;
-          group: true;
         }
-
         .bookmark-card:hover {
           background: rgba(255,255,255,0.05);
           border-color: rgba(255,255,255,0.1);
           transform: translateY(-1px);
         }
-
         .favicon {
           width: 32px; height: 32px;
           background: rgba(255,255,255,0.05);
@@ -255,11 +220,8 @@ export default function Dashboard() {
           display: flex; align-items: center; justify-content: center;
           flex-shrink: 0; overflow: hidden;
         }
-
         .favicon img { width: 18px; height: 18px; }
-
         .bookmark-info { flex: 1; overflow: hidden; }
-
         .bookmark-title {
           font-size: 14px;
           font-weight: 500;
@@ -271,9 +233,7 @@ export default function Dashboard() {
           white-space: nowrap;
           transition: color 0.15s;
         }
-
         .bookmark-title:hover { color: #FFD200; }
-
         .bookmark-url {
           font-size: 12px;
           color: rgba(255,255,255,0.25);
@@ -282,7 +242,6 @@ export default function Dashboard() {
           white-space: nowrap;
           margin-top: 2px;
         }
-
         .delete-btn {
           background: transparent;
           border: none;
@@ -294,14 +253,12 @@ export default function Dashboard() {
           transition: all 0.2s;
           flex-shrink: 0;
         }
-
         .delete-btn:hover { color: #ff6b6b; background: rgba(255,107,107,0.1); }
       `}</style>
 
       <div className="dashboard">
         <div className="bg-grid" />
 
-        {/* Header */}
         <header className="header">
           <div className="header-logo">
             <span className="dot">📌</span> Bookmarks
@@ -316,7 +273,6 @@ export default function Dashboard() {
           <h1 className="page-title">Your <span className="accent">links,</span><br />organized.</h1>
           <p className="page-sub">Add a bookmark below. It syncs in real time across all your tabs.</p>
 
-          {/* Form */}
           <div className="form-card">
             <div className="form-row">
               <div className="input-wrap">
@@ -343,7 +299,6 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Bookmarks */}
           <div className="section-header">
             <span className="section-title">Saved</span>
             <span className="count-badge">{bookmarks.length}</span>
